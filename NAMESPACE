@@ -1,4 +1,4 @@
-useDynLib("creNet2")
+useDynLib("creNet")
 
 import(dplyr)
 import(glmnet)

@@ -1,4 +1,4 @@
-Package: creNet2
+Package: creNet
 Type: Package
 Title: Fit a GLM with a combination of lasso and overlapping group
         lasso regularization
@@ -10,7 +10,7 @@ Description: Fit a regularized generalized linear model via penalized maximum li
 Imports: affy, Biobase, dplyr, fdrtool, limma, optparse, parallel,
         QuaternaryProd, glmnet
 Enhances: SGL
-License: GPL
+License: MIT
 LazyLoad: yes
 NeedsCompilation: yes
 Packaged: 2016-05-25 15:29:54 UTC; David

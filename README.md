@@ -1,2 +1,4 @@
 # creNet
-A biological network-based regularization model for response prediction using baseline gene-expression data
+creNET is an R package developed for prediction of response or risk factors using base-line gene expession data. The method is a  biological network-based regularization model for regression and classification. The model uses and ''ovelap group-norm penalty'' to penalize gene sets rather than individual genes. 
+
+Gene ssets are defined based on the topology of the gene interaction network. The penalty term is weighted to inforce differential shrinkage of gene sets based on their biological relevance. The biological relevance is measured using the R package QuaternaryProd: https://github.com/carltonyfakhry/QuaternaryProd

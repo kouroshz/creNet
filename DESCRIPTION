@@ -1,0 +1,16 @@
+Package: creNet2
+Type: Package
+Title: Fit a GLM with a combination of lasso and overlapping group
+        lasso regularization
+Version: 1.2
+Date: 2016-04-24
+Author: Kourosh Zarringhalam [aut,cre], David Degras [aut], Noah Simon [aut], Jerome Friedman [aut], Trevor Hastie [aut], and Rob Tibshirani [aut]
+Maintainer: Kourosh Zarringhalam <kourosh.zarringhalam@umb.edu>
+Description: Fit a regularized generalized linear model via penalized maximum likelihood. The model is fit for a path of values of the penalty parameter. Fits linear and logistic models. Modified code from package SGL.
+Imports: affy, Biobase, dplyr, fdrtool, limma, optparse, parallel,
+        QuaternaryProd, glmnet
+Enhances: SGL
+License: GPL
+LazyLoad: yes
+NeedsCompilation: yes
+Packaged: 2016-05-25 15:29:54 UTC; David

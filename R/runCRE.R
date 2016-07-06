@@ -1,3 +1,4 @@
+## Running CRE
 runCRE <- function(npp, npm, npz, nmp, nmm, nmz, nrp, nrm, nrz, nzp, nzm, nzz, method = c("Ternary","Quaternary","Enrichment","Fisher"))
 {
   

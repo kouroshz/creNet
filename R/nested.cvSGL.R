@@ -1,6 +1,6 @@
 nested.cvSGL <- function(ents, rels, x, y, type = c("linear","logit"), alphas = seq(0,1,.1),
 	nlam = 20, standardize = c("train","self","all","no"), nfold = 10, measure = c("ll","auc"), 
-	type.weight = c("cre","log.cre","sqrt","both","none"), num.iter = 10,
+	type.weight = c("cre","log.cre","sqrt","both","none"), filter = TRUE, num.iter = 10,
 	maxit = 1000, thresh = 0.001, min.frac = 0.05, gamma = 0.8, step = 1, reset = 10, cre.sig = 0.01,
 	de.sig = 0.01, ncores = 1, lambdas = NULL, verbose = FALSE)
 {

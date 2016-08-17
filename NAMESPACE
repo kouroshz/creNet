@@ -12,7 +12,7 @@ importFrom(QuaternaryProd, QP_Pvalue)
 
 export(accuracy, creFilter, cvSGL, getRegulatorSliceIndex, matchDataToKb, matchTrainTest,cvGlmnet,
        reportResults,nested.accuracy,nested.cvGlmnet, nested.cvSGL, predict.creNet, remConstCols, 
-       SGL, standardize, roc, processKB, processDataAndKB, nested.reportResults)
+       SGL, standardize, roc, processKB, processDataAndKB, nested.reportResults, reportNovelResults)
 
 S3method("plot","cv.creNet")
 S3method("predict","creNet")

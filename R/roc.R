@@ -56,34 +56,72 @@ roc = function(probs, y, thresh.vec = seq(0.01, 0.99, by = 0.01)){
 }
 
 ## Accuracy reports
-reportResults <- function(pred.probs, y.labs, cutoff, method = 'equal prior'){
-  cat(paste('prediction on test set accuracy with cutoff', paste(cutoff, collapse = ','), 'using method', method))
-  cat('\n')
+reportResults <- function(pred.probs, y.labs, cutoff, method = 'equal prior', verbose = TRUE){
+  if(verbose){
+    cat(paste('prediction on test set accuracy with cutoff', paste(cutoff, collapse = ','), 'using method', method))
+    cat('\n')
+  }
   L <- accuracy(pred.probs,y.labs, cutoff)
-  print(L)
-  cat('\n ============================================= \n')
+  if(verbose){
+    print(L)
+    cat('\n ============================================= \n')
+  }
   DF <- data.frame(cbind(apply(as.matrix(L), 1, mean), apply(as.matrix(L), 1, sd)), stringsAsFactors = F)
   rownames(DF) = rownames(L)
   colnames(DF) = c('mean', 'sd')
-  print(DF)
-  cat('\n ============================================= \n')
+  if(verbose){
+    print(DF)
+    cat('\n ============================================= \n')
+  }
   
+  return(DF)
 }
 
 
-nested.reportResults <- function(pred.probs, y.labs, indecies, cutoff, method = 'equal prior'){
-  cat(paste('prediction on test set accuracy with cutoff', paste(cutoff, collapse = ','), 'using method', method))
-  cat('\n')
+nested.reportResults <- function(pred.probs, y.labs, indecies, cutoff, method = 'equal prior', verbose = TRUE){
+  if(verbose){
+    cat(paste('prediction on test set accuracy with cutoff', paste(cutoff, collapse = ','), 'using method', method))
+    cat('\n')
+  }
 
   L <- nested.accuracy(pred.probs,y.labs, indecies, cutoff)
-  print(L)
-  cat('\n ============================================= \n')
+  if(verbose){
+    print(L)
+    cat('\n ============================================= \n')
+  }
   DF <- data.frame(cbind(apply(as.matrix(L), 1, mean), apply(as.matrix(L), 1, sd)), stringsAsFactors = F)
   rownames(DF) = rownames(L)
   colnames(DF) = c('mean', 'sd')
-  print(DF)
-  cat('\n ============================================= \n')
+  if(verbose){
+    print(DF)
+    cat('\n ============================================= \n')
+  }
   
+  return(DF)
 }
 
+## Accuracy reports
+reportNovelResults <- function(pred.probs, cutoff, method = 'equal prior', verbose = TRUE){
+  if(verbose){
+    cat(paste('prediction of test set labels with cutoff', paste(cutoff, collapse = ','), 'using method', method))
+    cat('\n')
+  }
+  
+  if(ncol(pred.probs) > 1){
+    if(length(cutoff) == 1) cutoff = rep(cutoff, ncol(pred.probs))
+    labs = matrix(-2, nrow = nrow(pred.probs), ncol = ncol(pred.probs))
+    for(i in 1:ncol(labs)){
+      labs[,i] = ifelse(pred.probs[,i] >= cutoff[i], 1, 0)
+    }
+    
+    pred.probs <- apply(labs, 1, mean)
+    labs <- ifelse(pred.probs >= 0.5, 1, 0)
+  }else{
+    labs <- ifelse(pred.probs >= cutoff, 1, 0)
+  }
+  
+  
+  
+  return(labs)
+}
 

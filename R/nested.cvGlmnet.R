@@ -12,6 +12,7 @@ nested.cvGlmnet <- function(x.train, y.train, num.iter = 10, nfold = 4, verbose 
   
   labs <- matrix(NA, nrow = n, ncol = num.iter)
   nonzero.genes = {}
+  nonzero.coeffs = {}
   ## generating CV folds.
   for(iter in 1:num.iter){
     if(verbose){
@@ -72,12 +73,13 @@ nested.cvGlmnet <- function(x.train, y.train, num.iter = 10, nfold = 4, verbose 
       
       ##
       nonzero.genes = c(nonzero.genes, colnames(x.train[,which(inner.fit$beta[, best.lam.ind] != 0)]))
+      nonzero.coeffs = c(nonzero.coeffs, inner.fit$beta[, best.lam.ind][which(inner.fit$beta[, best.lam.ind] != 0)])
     }
-    nonzero.genes = unique(nonzero.genes)
+    ##nonzero.genes = unique(nonzero.genes)
   }
   
   L <- list(pred = pred, labs = labs, best.lambdas = best.lambdas, nonzero.genes = nonzero.genes, 
-            outer.indecies = outer.indecies)
+            nonzero.coeffs = nonzero.coeffs, outer.indecies = outer.indecies)
   
   class(L) = c("nested.cvGlmnet")
   

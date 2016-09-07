@@ -29,6 +29,8 @@ nested.cvSGL <- function(ents, rels, x, y, type = c("linear","logit"), alphas = 
 	labs.ba <- matrix(NA, nrow = n, ncol = num.iter)
 	sig.groups = list()
 	## generating CV folds.
+	nonzero.genes = {}
+	nonzero.coeffs = {}
 	for(iter in 1:num.iter){
 	  if(verbose){
 	    cat('\n\n')
@@ -36,8 +38,8 @@ nested.cvSGL <- function(ents, rels, x, y, type = c("linear","logit"), alphas = 
 	    cat('\n')
 	  }
 
-	  
-	  while(TRUE){
+	  fold.counter = 1
+	  while(TRUE & fold.counter < 100){
 	    Flag = TRUE
 	    ind <- sample(1:n)
 	    for (o in 1:(nfold+1))
@@ -52,6 +54,13 @@ nested.cvSGL <- function(ents, rels, x, y, type = c("linear","logit"), alphas = 
 	    
 	    if(Flag)
 	      break
+	    
+	    fold.counter = fold.counter + 1
+	  }
+	  
+	  if(fold.counter > 100){
+	    cat('\n Sample size in one classes is too small \n')
+	    stop()
 	  }
 	  
 	  for (o in 1:(nfold+1))
@@ -71,9 +80,10 @@ nested.cvSGL <- function(ents, rels, x, y, type = c("linear","logit"), alphas = 
 	    groups <- L$groups
 	    weights <- L$weights
 	    uid.groups <- L$uid.groups
+	    child.uid <- L$child.uid
 	    
 	    # if (standardize == 'all') {
-	    # D <- creNet2::standardize(rbind(slice.train,slice.test))
+	    # D <- standardize(rbind(slice.train,slice.test))
 	    # ntrain <- length(ind.inner)
 	    # slice.train <- D$x[1:ntrain, ]
 	    # X.transform <- list(X.means = D$center, X.scale = D$scale)
@@ -87,12 +97,20 @@ nested.cvSGL <- function(ents, rels, x, y, type = c("linear","logit"), alphas = 
 	    if (verbose)
 	      cat("\n*** Running Cross-Validation ***")
 		  inner.fit <- NULL
-	    while(is.null(inner.fit)){
+		  loop.counter = 1
+	    while(is.null(inner.fit) & loop.counter < 10){
 	      try(inner.fit <- cvSGL(data=inner.data, index=groups, weights=weights, type=type, alphas=alphas,num.iter = 1,
 	                             nlam=nlam, standardize=standardize, nfold=nfold, measure=measure, maxit=maxit, thresh=thresh,
 	                             min.frac=min.frac, gamma=gamma, step=step, reset=reset, ncores=ncores, lambdas=NULL,
 	                             verbose=verbose))
+	      loop.counter = loop.counter + 1
 	    }
+		  
+		  if(loop.counter >= 10){
+		    cat('\n cannot fit the model \n')
+		    cat('\n is data size too small? \n')
+		    stop()
+		  }
 	    # inner.fit <- cvSGL(data=inner.data, index=groups, weights=weights, type=type, alphas=alphas,num.iter = 1,
 	    #                    nlam=nlam, standardize=standardize, nfold=nfold, measure=measure, maxit=maxit, thresh=thresh,
 	    #                    min.frac=min.frac, gamma=gamma, step=step, reset=reset, ncores=ncores, lambdas=NULL,
@@ -114,8 +132,11 @@ nested.cvSGL <- function(ents, rels, x, y, type = c("linear","logit"), alphas = 
 	    ##
 	    
 	    ##
-	    nonzero.genes = which(inner.fit$fit[[1]]$beta != 0)
-	    sig.groups = c(sig.groups, list(ents[which(ents$uid %in% unique(uid.groups[unique(nonzero.genes)])),]))
+	    nonzero.genes.tmp = which(inner.fit$fit[[1]]$beta != 0)
+	    nonzero.coeffs.tmp = inner.fit$fit[[1]]$beta[nonzero.genes.tmp]
+	    sig.groups = c(sig.groups, list(ents[which(ents$uid %in% unique(uid.groups[unique(nonzero.genes.tmp)])),]))
+	    nonzero.genes = c(nonzero.genes,  unlist(child.uid)[nonzero.genes.tmp])
+	    nonzero.coeffs = c(nonzero.coeffs, nonzero.coeffs.tmp)
 	    ##
 	    
 	    pred[ind.outer, iter] <- predict(inner.fit,slice.test,NULL,'self')[[1]]
@@ -128,9 +149,11 @@ nested.cvSGL <- function(ents, rels, x, y, type = c("linear","logit"), alphas = 
 	  
 	}
 
-	L <- list(sig.hyps = unique(unlist(lapply(sig.groups, function(x) x$name))), pred = pred, opt.thresh.dist = opt.thresh.dist,
-	          opt.thresh.f1 = opt.thresh.f1, opt.thresh.ba = opt.thresh.ba,best.alphas = best.alphas, best.lambdas = best.lambdas,
-	          labs.ep = labs.ep, labs.di = labs.di, labs.fq = labs.f1, labs.ba = labs.ba, outer.indecies = outer.indecies)
+	L <- list(sig.hyps = unique(unlist(lapply(sig.groups, function(x) x$name))), pred = pred, 
+	          opt.thresh.dist = opt.thresh.dist, opt.thresh.f1 = opt.thresh.f1, 
+	          opt.thresh.ba = opt.thresh.ba,best.alphas = best.alphas, best.lambdas = best.lambdas,
+	          labs.ep = labs.ep, labs.di = labs.di, labs.fq = labs.f1, labs.ba = labs.ba, 
+	          outer.indecies = outer.indecies, nonzero.genes = nonzero.genes, nonzero.coeffs = nonzero.coeffs)
 	
 	class(L) = c("nested.cv.creNet")
 	

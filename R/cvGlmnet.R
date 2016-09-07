@@ -8,6 +8,7 @@ cvGlmnet <- function(x.train, y.train, x.test, y.test, num.iter, nfold = 5, alph
   best.lams   <- matrix(NA, nrow = num.iter, ncol = 2)
 
   nonzero.genes = {}
+  nonzero.coeffs = {}
   for(iter in 1:num.iter){
     if(verbose){
       cat('\n\n')
@@ -37,12 +38,13 @@ cvGlmnet <- function(x.train, y.train, x.test, y.test, num.iter, nfold = 5, alph
     best.intercepts <- main.fit$a0[best.lam.ind]
     
     nonzero.genes = c(nonzero.genes, colnames(x.train[,which(best.betas != 0)]))
-    
+    nonzero.coeffs = c(nonzero.coeffs, best.betas[which(best.betas != 0)])
     #x.test  <- standardize(x.test)$x
     test.probs[,iter] <- predict(main.fit, newx = x.test, s = lam.min, type = "response", mode = "lambda")
     labs[,iter] <- ifelse(test.probs[,iter] > 0.5,1,0)
   }  
-  L <- list(fit = main.fit, best.lams = best.lams, test.probs = test.probs, labs = labs, nonzero.genes = nonzero.genes)
+  L <- list(fit = main.fit, best.lams = best.lams, test.probs = test.probs, labs = labs, 
+            nonzero.genes = nonzero.genes, nonzero.coeffs = nonzero.coeffs)
   
   return(L)
 }

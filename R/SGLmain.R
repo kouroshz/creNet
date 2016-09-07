@@ -125,7 +125,7 @@ cvSGL <- function(data, index = NULL, weights=NULL, type = c("linear","logit"), 
  	if (is.null(lambdas)) {
 		lambdas <- vector("list",nalpha)
 	    for (a in 1:nalpha)
-			lambdas[[a]] <- creNet2:::pathCalc(list(x=X,y=y), index, weights, alpha = alphas[a], 
+			lambdas[[a]] <- pathCalc(list(x=X,y=y), index, weights, alpha = alphas[a], 
 				min.frac = min.frac, nlam = nlam, type = type)
 		if (nalpha == 1) lambdas <- unlist(lambdas)		
 	} else {
@@ -162,8 +162,8 @@ cvSGL <- function(data, index = NULL, weights=NULL, type = c("linear","logit"), 
 	    cat('\n')
 	  }
 	  
-	  
-	  while(TRUE){
+	  samp.counter = 1
+	  while(TRUE & samp.counter < 100){
 	    Flag = TRUE
 	    ind <- sample(1:n, replace = F)
 	    for (i in 1:nfold)
@@ -178,8 +178,14 @@ cvSGL <- function(data, index = NULL, weights=NULL, type = c("linear","logit"), 
 	    
 	    if(Flag)
 	      break
+	    samp.counter = samp.counter + 1
 	  }
 	  
+	  if(samp.counter >= 100){
+	    cat('\n WARNING \n')
+	    cat(' Numer of samples in of of the classes <= 3')
+	  }
+	    
 	    
 	  #ind <- sample(1:n, replace = FALSE)
 	  

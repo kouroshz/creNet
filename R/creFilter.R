@@ -85,6 +85,10 @@ creFilter <- function(ents, rels, x.train, y.train, x.test = NULL, y.test = NULL
     
   }
   
+  ## update child uid, id and sgn according to sig.hypes
+  child.id = child.id[sig.ind]
+  child.uid = child.uid[sig.ind]
+  child.sgn = child.sgn[sig.ind]
   
   ## Duplicate data according to slices
   ## Note that slice is ordered according to u.hyps

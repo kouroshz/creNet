@@ -22,11 +22,32 @@ roc = function(probs, y, thresh.vec = seq(0.01, 0.99, by = 0.01)){
   }
   
 
-  opt.thresh.ba = thresh.vec[which.max(BalancedAccu)]
-  opt.thresh.f1 = thresh.vec[which.max(F1)]
+  ## there might be a range of threshold values that result to max accuracy.
+  ## for example when probabilites are close to 1 and 0, every threshold value
+  ## will give perfect predictions. In such cases, use the middle value.
+  ##
+  # opt.thresh.ba = thresh.vec[which.max(BalancedAccu)]
+  # opt.thresh.f1 = thresh.vec[which.max(F1)]
+  # distToCorner01 = sqrt((1 - tpr)^2 + (fpr)^2)
+  # opt.thresh.dist = thresh.vec[which.min(distToCorner01)]
+  # 
   distToCorner01 = sqrt((1 - tpr)^2 + (fpr)^2)
-  opt.thresh.dist = thresh.vec[which.min(distToCorner01)]
+  m.ba <- max(BalancedAccu)
+  m.f1 <- max(F1)
+  m.d  <- min(distToCorner01)
   
+  range.ba <- which(BalancedAccu == m.ba)
+  range.f1 <- which(F1 == m.f1)
+  range.d   <- which(distToCorner01 == m.d)
+  
+  opt.ba <- ceiling((range.ba[length(range.ba)] + range.ba[1]) / 2)
+  opt.f1 <- ceiling((range.f1[length(range.f1)] + range.f1[1]) / 2)
+  opt.d  <- ceiling((range.d[length(range.d)] + range.d[1]) / 2)
+  
+  opt.thresh.ba = thresh.vec[opt.ba]
+  opt.thresh.f1 = thresh.vec[opt.f1]
+  opt.thresh.dist = thresh.vec[opt.d]
+  ##########
   ind = order(fpr)
   fpr <- fpr[ind]
   tpr <- tpr[ind]

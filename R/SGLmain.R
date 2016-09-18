@@ -86,14 +86,20 @@ cvSGL <- function(data, index = NULL, weights=NULL, type = c("linear","logit"), 
 	colnames(best.alpha) = colnames(best.lambda) = c("index","value")
 	
 	## AUC related functions
-	if (measure == 'auc') {
-	  f.auc  <- function(probs) roc(probs,data$y)$AUC
-	  f.dist <- function(probs) roc(probs,data$y)$opt.thresh.dist
-	  f.f1   <- function(probs) roc(probs,data$y)$opt.thresh.f1
-	  f.ba   <- function(probs) roc(probs,data$y)$opt.thresh.ba
-	  opt.thresh.dist = opt.thresh.f1 = opt.thresh.ba = numeric(num.iter)
-	}
+	f.auc  <- function(probs) roc(probs,data$y)$AUC
+	f.dist <- function(probs) roc(probs,data$y)$opt.thresh.dist
+	f.f1   <- function(probs) roc(probs,data$y)$opt.thresh.f1
+	f.ba   <- function(probs) roc(probs,data$y)$opt.thresh.ba
+	opt.thresh.dist = opt.thresh.f1 = opt.thresh.ba = numeric(num.iter)
 	
+	# if (measure == 'auc') {
+	#   f.auc  <- function(probs) roc(probs,data$y)$AUC
+	#   f.dist <- function(probs) roc(probs,data$y)$opt.thresh.dist
+	#   f.f1   <- function(probs) roc(probs,data$y)$opt.thresh.f1
+	#   f.ba   <- function(probs) roc(probs,data$y)$opt.thresh.ba
+	#   opt.thresh.dist = opt.thresh.f1 = opt.thresh.ba = numeric(num.iter)
+	# }
+	# 
 	## Standardized data 
 	
 	if (standardize == "no") {
@@ -228,16 +234,24 @@ cvSGL <- function(data, index = NULL, weights=NULL, type = c("linear","logit"), 
 	  llSD <- lapply(lldiffFold, function(x) apply(x,2,sd) * sqrt(nfold))
 	  
 	  ## Find best parameters alpha and lambda	
+	  AUC <- lapply(pred[[iter]], function(x) apply(x, 2, f.auc))
+	  thresh.dist <- lapply(pred[[iter]], function(x) apply(x, 2, f.dist))
+	  thresh.f1   <- lapply(pred[[iter]], function(x) apply(x, 2, f.f1))
+	  thresh.ba   <- lapply(pred[[iter]], function(x) apply(x, 2, f.ba))
+	  
 	  if (measure == 'auc') {
-	    AUC <- lapply(pred[[iter]], function(x) apply(x, 2, f.auc))
-	    thresh.dist <- lapply(pred[[iter]], function(x) apply(x, 2, f.dist))
-	    thresh.f1   <- lapply(pred[[iter]], function(x) apply(x, 2, f.f1))
-	    thresh.ba   <- lapply(pred[[iter]], function(x) apply(x, 2, f.ba))
-	    
-	    best.alpha[iter, "index"] <- which.max(sapply(AUC,max)) 
-	    best.lambda[iter, "index"] <- which.max(AUC[[best.alpha[iter, "index"]]])
+	    ## There may be more than one max AUC. This can happen if
+	    ## predicted probabilities are all close to 0 and 1 in which
+	    ## case the AUC will be 0. In this case we take the largest lambda
+	    best.alpha[iter, "index"] <- which.max(sapply(AUC,max)) ## For Alpha it is OK to pick smallest
+	    tmp.AUC     <- AUC[[best.alpha[iter, "index"]]]
+	    m.AUC       <- max(tmp.AUC)
+	    m.AUC.ind   <- which(tmp.AUC == m.AUC)
+	    opt.AUC.ind <- m.AUC.ind[length(m.AUC.ind)]
+	    best.lambda[iter, "index"] <- opt.AUC.ind ## For lambda pick the largest
+	    ##best.alpha[iter, "index"] <- which.max(sapply(AUC,max)) 
+	    ##best.lambda[iter, "index"] <- which.max(AUC[[best.alpha[iter, "index"]]])
 	  } else {
-	    AUC = NULL
 	    best.alpha[iter, "index"] <- which.min(sapply(lldiff,min)) 
 	    best.lambda[iter, "index"] <- which.min(lldiff[[best.alpha[iter, "index"]]])
 	  }

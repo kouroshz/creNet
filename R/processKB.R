@@ -99,7 +99,9 @@ processKB <- function(ents.file, rels.file, verbose = F)
   if (length(inds)) rels <- rels[-inds,]
   
   ## Consolidate uids in ents	(remove duplicates)
-  uid <- split(ents$uid,list(ents$id,ents$type)) # group uids by id and type (mRNA, protein, compound...)
+  ## KZ: preordering the factors. split does not preserve the order
+  ##uid <- split(ents$uid,list(ents$id,ents$type)) # group uids by id and type (mRNA, protein, compound...)
+  uid <- split(ents$uid,list(factor(ents$id, levels = unique(ents$id)),factor(ents$type, levels = unique(ents$type))))
   muid <- sapply(uid,length) # multiplicities
   uid <- uid[muid>1] # duplicates are present and must be removed only if multiplicity = 1,
   dups <- lapply(uid, function(x) matrix(c(rep(x[1],length(x)-1),x[-1]), ncol=2))

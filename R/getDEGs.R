@@ -21,6 +21,8 @@ getDEGs <- function(ents, x.train, y.train, de.sig = 0.05, verbose=TRUE)
   ## Generate the evidence file for training examples
   evidence = tab.train[inds,c(1, 2, 5)]
   evidence = evidence[which(evidence$P.Value < de.sig & abs(evidence$logFC) > 0.55),c(1,2)]
+  ##evidence = evidence[which(evidence$adj.P.Value < de.sig & abs(evidence$logFC) > 0.55),c(1,2)]
+
   if(nrow(evidence) < 20 & de.sig < 0.05){
     if(verbose){
       print('Number of DEGs too small.')

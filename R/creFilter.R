@@ -30,7 +30,7 @@ creFilter <- function(ents, rels, x.train, y.train, x.test = NULL, y.test = NULL
     cre.priors.sig <- NULL
     sig.hyps <- NULL
     no.weights <- rep(1, nhyps)
-    sqrt.weights <- sqrt(sapply(groups),length)
+    sqrt.weights <- sqrt(sapply(groups,length))
     cre.weights <- NULL
     log.cre.weights <- NULL		
     both.weights <- NULL

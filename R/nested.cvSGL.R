@@ -70,9 +70,9 @@ nested.cvSGL <- function(ents, rels, x, y, type = c("linear","logit"), alphas = 
 	    ind.outer <- ind[(ind.split.outer[o]+1):ind.split.outer[o+1]]
 	    ind.inner <- setdiff(ind,ind.outer)
 	    outer.indecies[[iter]][[o]] = list(ind.outer)
-	    if (verbose)
+	    if (verbose & filter)
 	      cat("\n*** Running CRE ***")		
-	    L <- creFilter(ents, rels, x[ind.inner,], y[ind.inner], cre.sig = cre.sig, de.sig = de.sig, 
+	    L <- creFilter(ents, rels, x[ind.inner,], y[ind.inner], cre.sig = cre.sig, de.sig = de.sig, filter = filter,
 	                   type.weight = type.weight, verbose = FALSE)
 	    slice.train <- L$slice.train
 	    slice.ind <- L$slice.ind

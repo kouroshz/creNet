@@ -1,4 +1,4 @@
-processDataAndKB <- function(ents.file, rels.file, data.train.file, data.test.file = NULL, verbose = FALSE){
+processDataAndKB <- function(ents.file, rels.file, data.train.file, data.test.file = NULL, verbose = FALSE, uids = NULL){
   
   
   ## processing the network
@@ -7,6 +7,18 @@ processDataAndKB <- function(ents.file, rels.file, data.train.file, data.test.fi
   L <- processKB(ents.file, rels.file)
   ents <- L$ents
   rels <- L$rels
+  id.map <- L$id.map
+  if(!is.null(uids)){
+    ind <- match(uids, L$id.map$uid.orig)
+    if(is.na(ind[1])){
+      cat('\n Your specified uids do not exist in the network')
+      stop()
+    }
+    uids <- L$id.map$uid.new[ind]
+    L <- nodeNetList(uids, ents, rels, levels = F)
+    ents <- L$ents
+    rels <- L$rels
+  }
   
   x.test <- NULL
   y.test <- NULL

@@ -155,7 +155,7 @@ processKB <- function(ents.file, rels.file, verbose = F)
     cat("\n rels:", dim(rels)[1])
   }
   
-  L = list(ents = ents, rels = rels)
+  L = list(ents = ents, rels = rels, id.map = id.map)
   
 }
 

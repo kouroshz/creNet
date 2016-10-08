@@ -11,7 +11,7 @@ importFrom(parallel, mclapply, mcmapply)
 importFrom(QuaternaryProd, QP_Pvalue)
 
 export(accuracy, creFilter, cvSGL, getRegulatorSliceIndex, matchDataToKb, matchTrainTest,cvGlmnet,
-       reportResults,nested.accuracy,nested.cvGlmnet, nested.cvSGL, predict.creNet, remConstCols, 
+       reportResults,nested.accuracy,nested.cvGlmnet, nested.cvSGL, predict.creNet, remConstCols, nodeNetList,
        SGL, standardize, roc, processKB, processDataAndKB, nested.reportResults, reportNovelResults)
 
 S3method("plot","cv.creNet")

@@ -30,7 +30,7 @@ creFilter <- function(ents, rels, x.train, y.train, x.test = NULL, y.test = NULL
     cre.priors.sig <- NULL
     sig.hyps <- NULL
     no.weights <- rep(1, nhyps)
-    sqrt.weights <- rle(groups)$lengths
+    sqrt.weights <- sqrt(rle(groups)$lengths)
     ##sqrt.weights <- sqrt(sapply(groups,length))
     cre.weights <- NULL
     log.cre.weights <- NULL		
@@ -80,11 +80,10 @@ creFilter <- function(ents, rels, x.train, y.train, x.test = NULL, y.test = NULL
     ## Weights		
     cre.weights <- pval[sig.ind]/sum(pval[sig.ind])
     log.cre.weights <- 1/abs(log(pval[sig.ind]))		
-    sqrt.weights <- rle(groups[sig.ind])$lengths
+    sqrt.weights <- sqrt(rle(groups)$lengths[sig.ind])
     ##sqrt.weights <- sqrt(sapply(groups[sig.ind],length))
     both.weights <- cre.weights * sqrt.weights
     no.weights <- rep(1,length(sig.hyps))
-    
   }
   
   ## update child uid, id and sgn according to sig.hypes

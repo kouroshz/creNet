@@ -7,6 +7,24 @@ processKB <- function(ents.file, rels.file, verbose=FALSE)
 	ents <- read.table(ents.file, header=TRUE, sep='\t', comment.char="", 
 		stringsAsFactors=FALSE, na.strings="")
 	colnames(ents) = c("uid", "name", "id", "type")
+	
+	rels <- read.table(rels.file, header = TRUE, stringsAsFactors = FALSE, strip.white=TRUE, sep = '\t',
+	quote = NULL, comment.char = '')
+	colnames(rels) = c('uid', 'srcuid', 'trguid', 'type', 'pmids', 'nls')
+
+	cleanup <- function(x) {
+	x <- gsub('\"', '', x)
+	x <- gsub('\'', 'p', x)
+	x <- gsub('#', '_', x)
+	x <- gsub(' ', '', x)
+	return(x)
+	}
+	
+	ents <- as.data.frame(lapply(ents,cleanup), stringsAsFactors = F)
+	rownames(ents) <- 1:nrow(ents)
+	rels <- as.data.frame(lapply(rels,cleanup), stringsAsFactors = F)
+	rownames(rels) = 1:nrow(rels)
+	
 
 	## Group entities by id, name, and type
 	if (anyDuplicated(ents[,c("name","id","type")]))
@@ -34,11 +52,11 @@ processKB <- function(ents.file, rels.file, verbose=FALSE)
 	if (length(refs) < nrow(ents)) ents <- ents[refs,]
 
 	## Extract Protein, Compound or mRNA entities
-	ents <- ents[ents$type %in% c("Protein", "Compound", "mRNA"),]	
+	ents <- ents[ents$type %in% c("Protein", "Compound", "mRNA", "microRNA", "Micro RNA"),]	
 
 	## Remove entities with missing values
 	is.mRNA <- (ents$type == "mRNA") 
-	is.pc <- (ents$type %in% c("Protein","Compound"))
+	is.pc <- (ents$type %in% c("Protein","Compound","microRNA", "Micro RNA"))
 	na.id <- is.na(ents$id)
 	na.name <- is.na(ents$name)
 	ents <- ents[(is.mRNA & !na.id) | (is.pc & (!na.id | !na.name)),]
@@ -46,10 +64,6 @@ processKB <- function(ents.file, rels.file, verbose=FALSE)
 	## Remove duplicate entities 
 	if (anyDuplicated(ents)) ents <- unique(ents)
 
-	## Read relation file
-	rels <- read.table(rels.file, header=TRUE, sep="\t", comment.char="", 
-		stringsAsFactors=FALSE, na.strings="", quote=NULL)
-	colnames(rels) = c("uid", "srcuid", "trguid", "type", "pmids", "nls")
 	for (val in c("increase","decrease","conflict")) {
 		ind <- grep(val,rels$type)
 		if (length(ind)) rels$type[ind] <- val
@@ -67,8 +81,8 @@ processKB <- function(ents.file, rels.file, verbose=FALSE)
 	rels$trguid <- id.map$uid.new[match(rels$trguid,id.map$uid.orig)]
 
 	## Source must be protein or compound and target must be mRNA
-	is.mRNA <- (ents$type == "mRNA")
-	is.pc <- (ents$type %in% c("Protein","Compound"))
+	##is.mRNA <- (ents$type == "mRNA")
+	##is.pc <- (ents$type %in% c("Protein","Compound"))
 	rels <- rels[rels$srcuid %in% ents$uid[is.pc] & rels$trguid %in% ents$uid[is.mRNA],]
 	
 	## Extract entities that are matched in relation file

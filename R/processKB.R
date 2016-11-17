@@ -113,7 +113,7 @@ processKB <- function(ents.file, rels.file, verbose=FALSE)
 	cat("\n rels:", nrow(rels))
 	}
 	
-	L = list(ents = ents, rels = rels)
+	L = list(ents = ents, rels = rels, id.map = id.map)
 	return(L)
 
 }

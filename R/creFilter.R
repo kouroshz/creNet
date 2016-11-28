@@ -1,4 +1,4 @@
-creFilter <- function(ents, rels, x.train, y.train, x.test = NULL, y.test = NULL, 
+creFilter <- function(ents, rels, x.train, y.train, x.test = NULL, y.test = NULL, RNAseq = FALSE,
                       cre.sig = 0.01, de.sig = 0.01, type.weight = c("cre","log.cre","sqrt","both","none"), 
                       filter = TRUE, verbose = TRUE)
 {
@@ -45,7 +45,7 @@ creFilter <- function(ents, rels, x.train, y.train, x.test = NULL, y.test = NULL
       cat("\nRunning CRE")
     }
     ## Get differentially expressed genes
-    L <- getDEGs(ents, x.train, y.train, de.sig)
+    L <- getDEGs(ents, x.train, y.train, de.sig, RNAseq)
     evidence <- L$evidence
     ## Get CRE priors
     cre.priors <- generatePriors(ents, rels, evidence, verbose)

@@ -45,8 +45,6 @@ nested.cvGlmnet <- function(x.train, y.train, num.iter = 10, nfold = 4, verbose 
       ind.outer <- ind[(ind.split.outer[o]+1):ind.split.outer[o+1]]
       ind.inner <- setdiff(ind,ind.outer)
       outer.indecies[[iter]][[o]] = list(ind.outer)
-      if (verbose)
-        cat("\n*** Running CRE ***")		
       inner.data <- list(x = x.train[ind.inner,], y = y.train[ind.inner])
 
       ## Cross-validation

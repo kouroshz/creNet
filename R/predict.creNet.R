@@ -1,4 +1,4 @@
-predict.creNet <- function(obj, newX, lam=NULL, standardize = c("train","self", "no"))
+predict.creNet <- function(obj, newX, lam=NULL, standardize = c("train","self", "no"), LOOCV = FALSE)
 {
   
 	if ("cv.creNet" %in% class(obj)) obj <- obj$fit
@@ -17,7 +17,7 @@ predict.creNet <- function(obj, newX, lam=NULL, standardize = c("train","self", 
 	  
 	  ## Standardization
 	  #standardize <- match.arg(standardize)
-	  if (standardize == "train") {
+	  if (standardize == "train" || LOOCV) {
 	    X <- t(X) - obj[[iter]]$X.transform$X.means # transpose, center
 	    X <- t(X / obj[[iter]]$X.transform$X.scale) # scale, transpose back
 	  } else if (standardize == "self") {

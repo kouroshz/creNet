@@ -210,7 +210,7 @@ cvSGL <- function(data, index = NULL, weights=NULL, type = c("linear","logit"), 
 	    
 	    
 	    ## Predict responses for holdout fold
-	    outer.x <- data$x[ind.out,]
+	    outer.x <- data$x[ind.out,,drop = F]
 	    if (nalpha == 1) Sol <- list(Sol)
 	    pred.y <- lapply(Sol, predict, newX=outer.x, lam=NULL, standardize=stand.out)[[1]]
 	    for (a in 1:nalpha) {

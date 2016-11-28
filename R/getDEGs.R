@@ -1,4 +1,4 @@
-getDEGs <- function(ents, x.train, y.train, de.sig = 0.05, verbose=TRUE)
+getDEGs <- function(ents, x.train, y.train, de.sig = 0.05, RNAseq = FALSE, verbose=TRUE)
 {
   
   ents.mRNA = ents[which(ents$type == 'mRNA'), ]
@@ -10,7 +10,12 @@ getDEGs <- function(ents, x.train, y.train, de.sig = 0.05, verbose=TRUE)
   Group.train = factor(y.train , levels = levels(as.factor(y.train)))
   design.train = model.matrix(~Group.train)
   fit.train = limma::lmFit(t(x.train),design.train)
-  fit.train = limma::eBayes(fit.train)
+  if(RNAseq){
+    fit.train = limma::eBayes(fit.train,trend = T)
+  }else{
+    fit.train = limma::eBayes(fit.train)
+  }
+
   tab.train = limma::topTable(fit.train, coef = 2, adjust = "fdr", n = ncol(x.train))
   if(!('ID' %in% colnames(tab.train))){
     tab.train = data.frame(ID=rownames(tab.train), tab.train, stringsAsFactors=F)

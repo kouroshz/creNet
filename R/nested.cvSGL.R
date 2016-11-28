@@ -1,6 +1,6 @@
-nested.cvSGL <- function(ents, rels, x, y, type = c("linear","logit"), alphas = seq(0,1,.1),
+nested.cvSGL <- function(ents, rels, x, y, type = c("linear","logit"), alphas = seq(0,1,.1),LOOCV = FALSE,
 	nlam = 20, standardize = c("train","self","all","no"), nfold = 10, measure = c("ll","auc"), 
-	type.weight = c("cre","log.cre","sqrt","both","none"), filter = TRUE, num.iter = 10,
+	type.weight = c("cre","log.cre","sqrt","both","none"), filter = TRUE, num.iter = 10, RNAseq=FALSE,
 	maxit = 1000, thresh = 0.001, min.frac = 0.05, gamma = 0.8, step = 1, reset = 10, cre.sig = 0.01,
 	de.sig = 0.01, ncores = 1, lambdas = NULL, verbose = FALSE)
 {
@@ -72,11 +72,12 @@ nested.cvSGL <- function(ents, rels, x, y, type = c("linear","logit"), alphas = 
 	    outer.indecies[[iter]][[o]] = list(ind.outer)
 	    if (verbose & filter)
 	      cat("\n*** Running CRE ***")		
-	    L <- creFilter(ents, rels, x[ind.inner,], y[ind.inner], cre.sig = cre.sig, de.sig = de.sig, filter = filter,
+	    L <- creFilter(ents, rels, x[ind.inner,], y[ind.inner], cre.sig = cre.sig, 
+	                   de.sig = de.sig, filter = filter, RNAseq = RNAseq,
 	                   type.weight = type.weight, verbose = FALSE)
 	    slice.train <- L$slice.train
 	    slice.ind <- L$slice.ind
-	    slice.test <- x[ind.outer, slice.ind]
+	    slice.test <- x[ind.outer, slice.ind, drop = F]
 	    groups <- L$groups
 	    weights <- L$weights
 	    uid.groups <- L$uid.groups
@@ -139,7 +140,7 @@ nested.cvSGL <- function(ents, rels, x, y, type = c("linear","logit"), alphas = 
 	    nonzero.coeffs = c(nonzero.coeffs, nonzero.coeffs.tmp)
 	    ##
 	    
-	    pred[ind.outer, iter] <- predict(inner.fit,slice.test,NULL,'self')[[1]]
+	    pred[ind.outer, iter] <- predict(inner.fit,slice.test,NULL,'self', LOOCV)[[1]]
 	    
 	    labs.ep[ind.outer, iter] <- ifelse(pred[ind.outer, iter] > 0.5, 1, 0)
 	    labs.di[ind.outer, iter] <- ifelse(pred[ind.outer, iter] > inner.fit$fit[[1]]$opt.thresh.dist, 1, 0)

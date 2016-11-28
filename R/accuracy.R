@@ -45,7 +45,7 @@ nested.accuracy <- function(pred, obs, indecies, cf = 0.5){
   for (i in 1:npred)
   {
     for(j in 1:outer.folds){
-      slice = outer.indecies[[i]][[j]][[1]]
+      slice = indecies[[i]][[j]][[1]]
       predi[slice,i] <- ifelse(pred[slice,i] >= cf[j,i], 1, 0)
     }
     tab <- table(factor(predi[,i],levels = 0:1), obs)

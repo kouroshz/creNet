@@ -1,4 +1,4 @@
-roc = function(probs, y, thresh.vec = seq(0.01, 0.99, by = 0.01)){
+roc = function(probs, y, thresh.vec = seq(0.01, 0.99, by = 0.1)){
   tpr = rep(0,length(thresh.vec))
   fpr = rep(0,length(thresh.vec))
   Sens = rep(0,length(thresh.vec))
@@ -95,7 +95,23 @@ reportResults <- function(pred.probs, y.labs, cutoff, method = 'equal prior', ve
     cat('\n ============================================= \n')
   }
   
-  return(DF)
+  # Compute AUC and Roc Curve
+  if(!is.matrix(pred.probs)){
+    pred.probs = matrix(pred.probs, ncol = 1)
+  }
+  
+  ROCs <- apply(pred.probs[,1,drop = F], 2, function(x) roc(x, y.labs))
+  
+  all.AUCs <- unlist(lapply(ROCs, function(x) x$AUC))
+  AUC.mean <- mean(all.AUCs)
+  AUC.sd   <- sd(all.AUCs)
+  best.AUC <- which.max(all.AUCs)
+  ROC <- data.frame(FPR = ROCs[[best.AUC]]$FPR, TPR = ROCs[[best.AUC]]$TPR, stringsAsFactors = F) 
+  
+  DF <- rbind(DF, c(AUC.mean, AUC.sd))
+  rownames(DF)[nrow(DF)] = 'AUC'
+  
+  return(list(DF = DF, ROC = ROC))
 }
 
 
@@ -118,7 +134,18 @@ nested.reportResults <- function(pred.probs, y.labs, indecies, cutoff, method = 
     cat('\n ============================================= \n')
   }
   
-  return(DF)
+  ROCs <- apply(pred.probs, 2, function(x) roc(x, y.labs))
+  
+  all.AUCs <- unlist(lapply(ROCs, function(x) x$AUC))
+  AUC.mean <- mean(all.AUCs)
+  AUC.sd   <- sd(all.AUCs)
+  best.AUC <- which.max(all.AUCs)
+  ROC <- data.frame(FPR = ROCs[[best.AUC]]$FPR, TPR = ROCs[[best.AUC]]$TPR, stringsAsFactors = F) 
+  
+  DF <- rbind(DF, c(AUC.mean, AUC.sd))
+  rownames(DF)[nrow(DF)] = 'AUC'
+  
+  return(list(DF = DF, ROC = ROC))
 }
 
 ## Accuracy reports

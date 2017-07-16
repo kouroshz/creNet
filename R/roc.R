@@ -90,17 +90,13 @@ reportResults <- function(pred.probs, y.labs, cutoff, method = 'equal prior', ve
   DF <- data.frame(cbind(apply(as.matrix(L), 1, mean), apply(as.matrix(L), 1, sd)), stringsAsFactors = F)
   rownames(DF) = rownames(L)
   colnames(DF) = c('mean', 'sd')
-  if(verbose){
-    print(DF)
-    cat('\n ============================================= \n')
-  }
   
   # Compute AUC and Roc Curve
   if(!is.matrix(pred.probs)){
     pred.probs = matrix(pred.probs, ncol = 1)
   }
   
-  ROCs <- apply(pred.probs[,1,drop = F], 2, function(x) roc(x, y.labs))
+  ROCs <- apply(pred.probs, 2, function(x) roc(x, y.labs))
   
   all.AUCs <- unlist(lapply(ROCs, function(x) x$AUC))
   AUC.mean <- mean(all.AUCs)
@@ -110,6 +106,11 @@ reportResults <- function(pred.probs, y.labs, cutoff, method = 'equal prior', ve
   
   DF <- rbind(DF, c(AUC.mean, AUC.sd))
   rownames(DF)[nrow(DF)] = 'AUC'
+  
+  if(verbose){
+    print(DF)
+    cat('\n ============================================= \n')
+  }
   
   return(list(DF = DF, ROC = ROC))
 }
@@ -129,10 +130,6 @@ nested.reportResults <- function(pred.probs, y.labs, indecies, cutoff, method = 
   DF <- data.frame(cbind(apply(as.matrix(L), 1, mean), apply(as.matrix(L), 1, sd)), stringsAsFactors = F)
   rownames(DF) = rownames(L)
   colnames(DF) = c('mean', 'sd')
-  if(verbose){
-    print(DF)
-    cat('\n ============================================= \n')
-  }
   
   ROCs <- apply(pred.probs, 2, function(x) roc(x, y.labs))
   
@@ -144,6 +141,11 @@ nested.reportResults <- function(pred.probs, y.labs, indecies, cutoff, method = 
   
   DF <- rbind(DF, c(AUC.mean, AUC.sd))
   rownames(DF)[nrow(DF)] = 'AUC'
+  
+  if(verbose){
+    print(DF)
+    cat('\n ============================================= \n')
+  }
   
   return(list(DF = DF, ROC = ROC))
 }

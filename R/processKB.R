@@ -60,7 +60,11 @@ processKB <- function(ents.file, rels.file, verbose=FALSE)
 	na.id <- is.na(ents$id)
 	na.name <- is.na(ents$name)
 	ents <- ents[(is.mRNA & !na.id) | (is.pc & (!na.id | !na.name)),]
-
+	is.mRNA <- (ents$type == "mRNA") 
+	is.pc <- (ents$type %in% c("Protein","Compound"))
+	na.id <- is.na(ents$id)
+	na.name <- is.na(ents$name)
+	
 	## Remove duplicate entities 
 	if (anyDuplicated(ents)) ents <- unique(ents)
 

@@ -21,12 +21,12 @@ processDataAndKB <- function(ents.file, rels.file, data.train.file, data.test.fi
     ## Match train and test files so they have the same columns
     L <- matchTrainTest(data.train, data.test)
     
-    x.train = as.matrix(L$train.dat[,2:ncol(L$train.dat)])
+    x.train = data.matrix(L$train.dat[,2:ncol(L$train.dat)])
     y.train = as.vector(L$train.dat[,1])
-    x.test = as.matrix(L$test.dat[,2:ncol(L$test.dat)])
+    x.test = data.matrix(L$test.dat[,2:ncol(L$test.dat)])
     y.test = as.vector(L$test.dat[,1])
   }else{
-    x.train = as.matrix(data.train[,2:ncol(data.train)])
+    x.train = data.matrix(data.train[,2:ncol(data.train)])
     y.train = as.vector(data.train[,1])
   }
   

@@ -1,4 +1,4 @@
-nested.cvGlmnet <- function(x.train, y.train, num.iter = 10, nfold = 4, verbose = TRUE){
+nested.cvGlmnet <- function(x.train, y.train, num.iter = 10, nfold = 4, verbose = TRUE, alpha = 1){
   
   n <- length(y.train)
   pred <- matrix(NA, nrow = n, ncol = num.iter)
@@ -53,7 +53,8 @@ nested.cvGlmnet <- function(x.train, y.train, num.iter = 10, nfold = 4, verbose 
       ## looping through the inner folds ans selecting the best model (lambda)
       cv.fit <- NULL
       while(is.null(cv.fit)){
-        try(cv.fit<-cv.glmnet(inner.data$x, inner.data$y, family="binomial", type.measure = "deviance", nfolds = nfold))
+        try(cv.fit<-cv.glmnet(inner.data$x, inner.data$y, family="binomial", 
+                              type.measure = "deviance", nfolds = nfold, alpha = alpha))
       }
       #cv.fit <- cv.glmnet(inner.data$x, inner.data$y, family="binomial", type.measure = "deviance", nfolds = nfold)
       lambdas <- cv.fit$lambda
@@ -62,7 +63,7 @@ nested.cvGlmnet <- function(x.train, y.train, num.iter = 10, nfold = 4, verbose 
       best.lambdas[o, (2*iter-1):(2*iter)] <- c(lambda.min, best.lam.ind)
  
       ## fir on all folds 
-      inner.fit <- glmnet(inner.data$x, inner.data$y, family="binomial", alpha = 1,lambda = lambdas)
+      inner.fit <- glmnet(inner.data$x, inner.data$y, family="binomial", alpha = alpha,lambda = lambdas)
       ##x.outer = standardize(x.train[ind.outer, ,drop = F])$x
       x.outer = x.train[ind.outer, ,drop = F]
       pred[ind.outer, iter] <- predict(inner.fit, newx = x.outer, s = lambda.min, type = "response", mode = "lambda")

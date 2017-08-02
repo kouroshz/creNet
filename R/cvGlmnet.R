@@ -21,7 +21,8 @@ cvGlmnet <- function(x.train, y.train, x.test, y.test, num.iter, nfold = 5, alph
     #lambda.min = fit$lambda.min
     cv.fit <- NULL
     while(is.null(cv.fit)){
-      try(cv.fit<-cv.glmnet(x.train, y.train, family = "binomial", type.measure = "deviance", nfolds = nfold))
+      try(cv.fit<-cv.glmnet(x.train, y.train, family = "binomial", type.measure = "deviance", 
+                            nfolds = nfold, alpha = alpha))
     }
     
     #cv.fit <- cv.glmnet(x.train, y.train, family = "binomial", type.measure = "deviance", nfolds = nfold)
@@ -33,7 +34,7 @@ cvGlmnet <- function(x.train, y.train, x.test, y.test, num.iter, nfold = 5, alph
     best.lams[iter, 2] <- lam.min
  
     ## Fitting the Full model
-    main.fit <- glmnet(x.train, y.train, family="binomial", alpha = 1, lambda = lambdas)
+    main.fit <- glmnet(x.train, y.train, family="binomial", alpha = alpha, lambda = lambdas)
     best.betas      <- main.fit$beta[,best.lam.ind]
     best.intercepts <- main.fit$a0[best.lam.ind]
     

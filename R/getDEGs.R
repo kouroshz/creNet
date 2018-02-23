@@ -1,4 +1,4 @@
-getDEGs <- function(ents, x.train, y.train, de.sig = 0.05, RNAseq = FALSE, verbose=TRUE)
+getDEGs <- function(ents, x.train, y.train, de.sig = 0.05, log.fc = 0.55, RNAseq = FALSE, verbose=TRUE)
 {
   
   ents.mRNA = ents[which(ents$type == 'mRNA'), ]
@@ -25,7 +25,7 @@ getDEGs <- function(ents, x.train, y.train, de.sig = 0.05, RNAseq = FALSE, verbo
   
   ## Generate the evidence file for training examples
   evidence = tab.train[inds,c(1, 2, 5)]
-  evidence = evidence[which(evidence$P.Value < de.sig & abs(evidence$logFC) > 0.55),c(1,2)]
+  evidence = evidence[which(evidence$P.Value < de.sig & abs(evidence$logFC) > log.fc),c(1,2)]
   ##evidence = evidence[which(evidence$adj.P.Value < de.sig & abs(evidence$logFC) > 0.55),c(1,2)]
 
   if(nrow(evidence) < 20 & de.sig < 0.05){

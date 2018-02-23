@@ -131,7 +131,7 @@ cvSGL <- function(data, index = NULL, weights=NULL, type = c("linear","logit"), 
  	if (is.null(lambdas)) {
 		lambdas <- vector("list",nalpha)
 	    for (a in 1:nalpha)
-			lambdas[[a]] <- pathCalc(list(x=X,y=y), index, weights, alpha = alphas[a], 
+			lambdas[[a]] <- creNet:::pathCalc(list(x=X,y=y), index, weights, alpha = alphas[a], 
 				min.frac = min.frac, nlam = nlam, type = type)
 		if (nalpha == 1) lambdas <- unlist(lambdas)		
 	} else {
@@ -212,9 +212,9 @@ cvSGL <- function(data, index = NULL, weights=NULL, type = c("linear","logit"), 
 	    ## Predict responses for holdout fold
 	    outer.x <- data$x[ind.out,,drop = F]
 	    if (nalpha == 1) Sol <- list(Sol)
-	    pred.y <- lapply(Sol, predict, newX=outer.x, lam=NULL, standardize=stand.out)[[1]]
+	    pred.y <- lapply(Sol, predict, newX=outer.x, lam=NULL, standardize=stand.out)
 	    for (a in 1:nalpha) {
-	      pya <- pred.y[[a]]
+	      pya <- pred.y[[a]][[1]]
 	      
 	      if (type == "linear") {
 	        lldiffFold[[a]][i,] <- colSums((data$y[ind.out] - pya)^2)/2
